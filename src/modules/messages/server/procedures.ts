@@ -2,10 +2,10 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 import { prisma } from "@/lib/db";
-
+import { inngest } from "@/inngest/client";
 import { protectedProcedure, createTRPCRouter } from "@/trpc/init";
 import { consumeCredits } from "@/lib/usage";
-import OpenAI from "openai";
+
 export const messagesRouter = createTRPCRouter({
   getMany: protectedProcedure
   .input(
@@ -74,33 +74,13 @@ export const messagesRouter = createTRPCRouter({
         },
       });
 
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// 🔥 Generate AI response
-const response = await openai.chat.completions.create({
-  model: "gpt-4o-mini",
-  messages: [
-    {
-      role: "user",
-      content: input.value,
-    },
-  ],
-});
-
-const aiResponse = response.choices[0].message.content;
-
-// 🔥 SAVE AI RESPONSE
-await prisma.message.create({
-  data: {
-    projectId: existingProject.id,
-    content: aiResponse || "No response",
-    role: "ASSISTANT",
-    type: "RESULT",
-  },
-});
+      await inngest.send({
+        name: "code-agent/run",
+        data: {
+          value: input.value,
+          projectId: input.projectId,
+        },
+      });
 
       return createdMessage;
     }),
