@@ -11,7 +11,7 @@
 # const sandbox = await Sandbox.create('vibe-nextjs-aurexoai-2')
 
 team_id = "45ef509c-6706-4015-9718-e014b305a90c"
-start_cmd = "compile_page.sh"
+start_cmd = "/compile_page.sh"
 dockerfile = "e2b.Dockerfile"
 template_name = "vibe-nextjs-aurexoai-2"
 template_id = "5cu4rqmlwqfj7ew1jnad"
